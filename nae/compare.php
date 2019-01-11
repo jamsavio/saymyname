@@ -1,13 +1,23 @@
 <html>
 <head>
 <title>NAE</title>
+<!-- UIkit CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.26/css/uikit.min.css" />
+
+<!-- UIkit JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.26/js/uikit.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.26/js/uikit-icons.min.js"></script>
 </head>
 
+<body>
+<div class="uk-position-center">
+<h1 class="uk-heading-bullet"><span uk-icon="icon: info; ratio: 2; font-width: 5px"></span>&nbsp;<span style="font-family: Segoe UI">saymy</span><b>name</b></h1>
 <h3>Comparar planilhas</h3>
 <form action="#" method="POST" enctype="multipart/form-data">
-<table>
-<tr><td><b>Planilha do nae:</b></td><td><input type="file" name="planilha_nae"></td></tr>
-<tr><td><b>Planilha do nti:</b></td><td><input type="file" name="planilha_nti"></td></tr>
+<table class="uk-table uk-table-small">
+<tbody>
+<tr><td><b>Planilha do NAE:</b></td><td><input type="file" name="planilha_nae"></td></tr>
+<tr><td><b>Planilha do NTI:</b></td><td><input type="file" name="planilha_nti"></td></tr>
 <tr>
 <td>
 <select name="aba">
@@ -21,6 +31,7 @@
 <input type="text" name="aba_esp" placeholder="Especifique">
 </td>
 </tr>
+</tbody>
 <tr><td><br><input type="submit" value="Enviar"></td></tr>
 </table>
 </form>
@@ -37,32 +48,40 @@
 
       		move_uploaded_file($_FILES['planilha_nae']['tmp_name'], $dir.$new_name); //Fazer upload do arquivo
       }else{
-	echo "<script>javascript:alert('Para a lista  do nae somente arquivo xlsx é permitido.')</script>";
+	echo '<div class="uk-alert-danger" uk-alert>Para a lista do nae somente arquivo xlsx é permitido.</div>';
       }
    }
 
   if(isset($_FILES['planilha_nti']))
    {
      $ext = strtolower(substr($_FILES['planilha_nti']['name'],-4));
-     if($ext==".csv" || $ext==""){
+     if($ext==".csv"){
       		$new_name = "planilha_nti" . $ext; //Definindo um novo nome para o arquivo
      	 	$dir = 'uploads/'; //Diretório para uploads
       		move_uploaded_file($_FILES['planilha_nti']['tmp_name'], $dir.$new_name); //Fazer upload do arquivo
      }else{
-		echo "<script>javascript:alert('Para a lista do nti somente arquivo csv é permitido.')</script>";
+		echo '<div class="uk-alert-danger" uk-alert>Para a lista do nti somente arquivo csv é permitido.</div>';
      }
    }
 
    $aba = "";
    if($_POST['aba']=="Outro"){
-   	$aba=$_POST['aba_esp'];
+	if($_POST['aba_esp']!=""){
+   		$aba=$_POST['aba_esp'];
+	}else{
+		echo '<div class="uk-alert-danger" uk-alert>Especifique o tipo da bolsa.</div>';
+	}
    }else{
    	$aba=$_POST['aba'];
    }
 
 //echo "entrou aqui";
-$resultado1 = system("/var/www/html/nae/Programa_feito/compare.py /var/www/html/nae/uploads/planilha_nae.xlsx /var/www/html/nae/uploads/planilha_nti.csv ".$aba);
+$resultado1 = shell_exec("/var/www/html/nae/Programa_feito/compare.py /var/www/html/nae/uploads/planilha_nae.xlsx /var/www/html/nae/uploads/planilha_nti.csv ".$aba);
+echo $resultado1;
 ?>
-<br><br><br>
+<br><br>
+
 <a href="/nae">Converter pdf para csv</a>
+</div>
+</body>
 </html>
